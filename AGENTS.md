@@ -1,7 +1,7 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-- `client/` contains the Vue 3 + Vite frontend (`src/` for components, composables, and styles).
+- `client/` contains the Vue 3 + Vite frontend with Tailwind CSS (`src/` for components, composables, and styles).
 - `server/` contains the Express + Mongoose API (`src/` with `routes/`, `controllers/`, `models/`, and `config/`).
 - `README.md` documents setup and API endpoints.
 
@@ -17,6 +17,7 @@ Run these from the repo root unless noted:
 ## Coding Style & Naming Conventions
 - JavaScript/TypeScript uses ES modules (`import`/`export`) with two-space indentation.
 - Vue single-file components live in `client/src/` and use `<script setup>`.
+- Tailwind CSS is the primary styling approach; global styles and theme tokens live in `client/src/assets/styles.css`.
 - Keep filenames descriptive and camelCase for JS modules (e.g., `useRadioApi.js`).
 - Prefer functional, small modules in `server/src/` and keep route paths under `/api`.
 

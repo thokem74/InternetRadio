@@ -1,6 +1,6 @@
 # Internet Radio (MEVN)
 
-A full-stack internet radio web app built with **MongoDB, Express, Vue 3, and Node.js**.
+A full-stack internet radio web app built with **MongoDB, Express, Vue 3, Node.js, and Tailwind CSS**.
 
 ## Features
 - Browse curated radio stations from different countries.
@@ -8,10 +8,11 @@ A full-stack internet radio web app built with **MongoDB, Express, Vue 3, and No
 - Filter by genre.
 - Stream stations in-browser via HTML5 audio.
 - Save/remove favorite stations (persisted in MongoDB, with automatic in-memory fallback in dev if MongoDB is unavailable).
+- Tailwind-based UI with a dark theme and custom typography.
 
 ## Project Structure
 - `server/` - Express + Mongoose REST API.
-- `client/` - Vue 3 + Vite front-end.
+- `client/` - Vue 3 + Vite front-end with Tailwind CSS.
 
 ## Getting Started
 
