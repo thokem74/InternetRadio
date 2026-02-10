@@ -1,49 +1,91 @@
 <template>
-  <main class="layout">
-    <section class="player-panel">
-      <h1>Internet Radio Explorer</h1>
-      <p class="subtitle">Discover and play world radio streams in one place.</p>
+  <main
+    class="min-h-screen bg-ink-900 text-slate-100"
+  >
+    <div class="absolute inset-0 -z-10 bg-radial-spot" aria-hidden="true"></div>
+    <div class="absolute inset-0 -z-10 bg-radial-pink" aria-hidden="true"></div>
 
-      <div v-if="currentStation" class="now-playing">
-        <h2>Now Playing</h2>
-        <p>{{ currentStation.name }} ({{ currentStation.country }})</p>
-      </div>
-      <p v-else class="hint">Choose a station below to start listening.</p>
+    <div class="mx-auto grid max-w-6xl gap-6 px-4 py-6 md:grid-cols-[minmax(280px,360px)_1fr]">
+      <section
+        class="rounded-2xl border border-ink-600/70 bg-ink-800/80 p-5 shadow-glow backdrop-blur"
+      >
+        <div class="space-y-2">
+          <p class="text-xs uppercase tracking-[0.28em] text-neon-cyan/80">Live catalog</p>
+          <h1 class="font-display text-2xl font-semibold tracking-tight text-white md:text-3xl">
+            Internet Radio Explorer
+          </h1>
+          <p class="text-sm text-slate-300">
+            Discover and play world radio streams in one place.
+          </p>
+        </div>
 
-      <audio ref="audioRef" controls autoplay class="player"></audio>
+        <div class="mt-5 rounded-xl border border-ink-600/70 bg-ink-900/60 p-4">
+          <h2 class="text-sm font-semibold uppercase tracking-widest text-slate-300">Now playing</h2>
+          <p v-if="currentStation" class="mt-2 text-lg font-semibold text-white">
+            {{ currentStation.name }}
+          </p>
+          <p v-if="currentStation" class="text-sm text-slate-400">
+            {{ currentStation.country }} · {{ currentStation.language }}
+          </p>
+          <p v-else class="mt-2 text-sm text-slate-400">
+            Choose a station below to start listening.
+          </p>
+        </div>
 
-      <div class="filters">
-        <label>
-          Search
-          <input v-model="searchTerm" type="text" placeholder="station, country, genre" />
-        </label>
-        <label>
-          Genre
-          <select v-model="genreFilter">
-            <option value="all">All</option>
-            <option v-for="genre in availableGenres" :key="genre" :value="genre">{{ genre }}</option>
-          </select>
-        </label>
-      </div>
+        <audio ref="audioRef" controls autoplay class="mt-4 w-full"></audio>
 
-      <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
-    </section>
+        <div class="mt-5 space-y-3">
+          <label class="text-xs font-semibold uppercase tracking-widest text-slate-300">
+            Search
+            <input
+              v-model="searchTerm"
+              type="text"
+              placeholder="station, country, genre"
+              class="mt-2 w-full rounded-xl border border-ink-600/70 bg-ink-900/70 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-neon-cyan focus:outline-none focus:ring-2 focus:ring-neon-cyan/40"
+            />
+          </label>
+          <label class="text-xs font-semibold uppercase tracking-widest text-slate-300">
+            Genre
+            <select
+              v-model="genreFilter"
+              class="mt-2 w-full rounded-xl border border-ink-600/70 bg-ink-900/70 px-3 py-2 text-sm text-slate-100 focus:border-neon-pink focus:outline-none focus:ring-2 focus:ring-neon-pink/40"
+            >
+              <option value="all">All</option>
+              <option v-for="genre in availableGenres" :key="genre" :value="genre">{{ genre }}</option>
+            </select>
+          </label>
+        </div>
 
-    <section>
-      <h2>Stations</h2>
-      <div class="grid">
-        <StationCard
-          v-for="station in filteredStations"
-          :key="station.id"
-          :station="station"
-          :is-favorite="favoriteIds.has(station.id)"
-          :favorite-busy="favoriteLoading"
-          @listen="playStation"
-          @add-favorite="saveFavorite"
-          @remove-favorite="deleteFavorite"
-        />
-      </div>
-    </section>
+        <p v-if="errorMessage" class="mt-4 text-sm text-rose-300">
+          {{ errorMessage }}
+        </p>
+      </section>
+
+      <section class="space-y-4">
+        <div class="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 class="font-display text-xl font-semibold text-white">Stations</h2>
+            <p class="text-sm text-slate-400">Scan by genre, country, or language.</p>
+          </div>
+          <div class="rounded-full border border-ink-600/70 bg-ink-800/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-neon-cyan">
+            {{ filteredStations.length }} results
+          </div>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <StationCard
+            v-for="station in filteredStations"
+            :key="station.id"
+            :station="station"
+            :is-favorite="favoriteIds.has(station.id)"
+            :favorite-busy="favoriteLoading"
+            @listen="playStation"
+            @add-favorite="saveFavorite"
+            @remove-favorite="deleteFavorite"
+          />
+        </div>
+      </section>
+    </div>
   </main>
 </template>
 
