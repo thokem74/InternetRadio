@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const favoriteStationSchema = new mongoose.Schema(
   {
-    stationId: {
+    stationuuid: {
       type: String,
       required: true,
       unique: true,
@@ -13,30 +13,48 @@ const favoriteStationSchema = new mongoose.Schema(
       required: true,
       trim: true
     },
-    country: {
+    url_stream: {
       type: String,
       required: true,
       trim: true
     },
-    language: {
+    url_homepage: {
       type: String,
-      required: true,
+      default: '',
       trim: true
     },
-    genre: {
+    url_favicon: {
       type: String,
-      required: true,
+      default: '',
       trim: true
     },
-    streamUrl: {
+    tags: {
       type: String,
-      required: true,
+      default: '',
       trim: true
     },
-    homepage: {
+    iso_3166_1: {
       type: String,
-      required: true,
+      default: '',
       trim: true
+    },
+    iso_3166_2: {
+      type: String,
+      default: null,
+      trim: true
+    },
+    iso_639: {
+      type: String,
+      default: null,
+      trim: true
+    },
+    geo_lat: {
+      type: Number,
+      default: null
+    },
+    geo_long: {
+      type: Number,
+      default: null
     }
   },
   { timestamps: true }
