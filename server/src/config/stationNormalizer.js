@@ -1,12 +1,4 @@
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const catalogPath = path.resolve(__dirname, '../../../radiobrowser_stations_latest.json');
-
-const STATION_KEYS = [
+export const STATION_KEYS = [
   'stationuuid',
   'name',
   'url_stream',
@@ -29,7 +21,7 @@ function normalizeString(value, { preserveNull = false } = {}) {
     return '';
   }
 
-  return String(value);
+  return String(value).trim();
 }
 
 function normalizeCoordinate(value) {
@@ -41,7 +33,7 @@ function normalizeCoordinate(value) {
   return Number.isFinite(number) ? number : null;
 }
 
-function normalizeStation(raw) {
+export function normalizeStation(raw = {}) {
   const station = {
     stationuuid: normalizeString(raw.stationuuid),
     name: normalizeString(raw.name),
@@ -64,32 +56,3 @@ function normalizeStation(raw) {
 
   return station;
 }
-
-function loadStationsFromDisk() {
-  if (!fs.existsSync(catalogPath)) {
-    throw new Error(`Station catalog not found at ${catalogPath}`);
-  }
-
-  let parsed;
-  try {
-    parsed = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
-  } catch (error) {
-    throw new Error(`Unable to parse station catalog JSON: ${error.message}`);
-  }
-
-  if (!Array.isArray(parsed)) {
-    throw new Error('Station catalog format is invalid. Expected a JSON array.');
-  }
-
-  const stations = parsed
-    .map((item) => normalizeStation(item))
-    .filter((station) => station.stationuuid && station.name && station.url_stream);
-
-  if (stations.length === 0) {
-    throw new Error('Station catalog is empty after normalization.');
-  }
-
-  return stations;
-}
-
-export const radioCatalog = loadStationsFromDisk();
