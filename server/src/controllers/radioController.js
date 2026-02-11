@@ -1,5 +1,5 @@
-import { radioCatalog } from '../config/radioCatalog.js';
 import { deleteFavorite, listFavorites, upsertFavorite } from '../config/favoriteStore.js';
+import { listStations } from '../config/stationStore.js';
 
 const MAX_PAGE_SIZE = 100;
 const DEFAULT_PAGE_SIZE = 50;
@@ -7,17 +7,6 @@ const DEFAULT_PAGE_SIZE = 50;
 function parsePositiveInt(value, fallback) {
   const parsed = Number.parseInt(value, 10);
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
-}
-
-function splitTags(tagString) {
-  if (!tagString) {
-    return [];
-  }
-
-  return tagString
-    .split(',')
-    .map((tag) => tag.trim().toLowerCase())
-    .filter(Boolean);
 }
 
 function normalizeString(value) {
@@ -28,7 +17,7 @@ function normalizeString(value) {
   return String(value).trim();
 }
 
-export const getStations = (req, res) => {
+export const getStations = async (req, res, next) => {
   const page = parsePositiveInt(req.query.page, 1);
   const requestedLimit = parsePositiveInt(req.query.limit, DEFAULT_PAGE_SIZE);
   const limit = Math.min(requestedLimit, MAX_PAGE_SIZE);
@@ -38,57 +27,20 @@ export const getStations = (req, res) => {
   const iso31661 = normalizeString(req.query.iso_3166_1).toLowerCase();
   const iso639 = normalizeString(req.query.iso_639).toLowerCase();
 
-  const filtered = radioCatalog.filter((station) => {
-    const stationIso31661 = (station.iso_3166_1 ?? '').toLowerCase();
-    const stationIso639 = (station.iso_639 ?? '').toLowerCase();
-
-    if (iso31661 && stationIso31661 !== iso31661) {
-      return false;
-    }
-
-    if (iso639 && stationIso639 !== iso639) {
-      return false;
-    }
-
-    if (tag) {
-      const tags = splitTags(station.tags);
-      if (!tags.includes(tag)) {
-        return false;
-      }
-    }
-
-    if (q) {
-      const searchText = [station.name, station.tags, station.iso_3166_1, station.iso_639]
-        .filter((value) => value !== null && value !== undefined)
-        .join(' ')
-        .toLowerCase();
-
-      if (!searchText.includes(q)) {
-        return false;
-      }
-    }
-
-    return true;
-  });
-
-  const totalItems = filtered.length;
-  const totalPages = Math.max(1, Math.ceil(totalItems / limit));
-  const safePage = Math.min(page, totalPages);
-  const offset = (safePage - 1) * limit;
-
-  const items = filtered.slice(offset, offset + limit);
-
-  res.json({
-    items,
-    pagination: {
-      page: safePage,
+  try {
+    const result = await listStations({
+      page,
       limit,
-      totalItems,
-      totalPages,
-      hasNextPage: safePage < totalPages,
-      hasPrevPage: safePage > 1
-    }
-  });
+      q,
+      tag,
+      iso_3166_1: iso31661,
+      iso_639: iso639
+    });
+
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const getFavorites = async (_req, res, next) => {

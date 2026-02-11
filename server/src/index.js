@@ -4,7 +4,6 @@ import express from 'express';
 import mongoose from 'mongoose';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { setMemoryStoreMode } from './config/favoriteStore.js';
 import radioRoutes from './routes/radioRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -32,16 +31,14 @@ app.use((err, _req, res, _next) => {
 
 async function start() {
   if (!mongoUri) {
-    console.warn('Missing MONGODB_URI, using in-memory favorites store.');
-    setMemoryStoreMode(true);
-  } else {
-    try {
-      await mongoose.connect(mongoUri);
-      console.log('Connected to MongoDB.');
-    } catch (error) {
-      console.warn('MongoDB connection failed, using in-memory favorites store.', error.message);
-      setMemoryStoreMode(true);
-    }
+    throw new Error('Missing MONGODB_URI. MongoDB is required to start the server.');
+  }
+
+  try {
+    await mongoose.connect(mongoUri);
+    console.log('Connected to MongoDB.');
+  } catch (error) {
+    throw new Error(`MongoDB connection failed: ${error.message}`);
   }
 
   app.listen(port, () => {
