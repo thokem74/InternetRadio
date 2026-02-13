@@ -15,10 +15,52 @@
 
         <div class="mt-5 rounded-xl border border-ink-600/70 bg-ink-900/60 p-4">
           <h2 class="text-sm font-semibold uppercase tracking-widest text-slate-300">Now playing</h2>
-          <p v-if="currentStation" class="mt-2 text-lg font-semibold text-white">{{ currentStation.name }}</p>
-          <p v-if="currentStation" class="text-sm text-slate-400">
-            {{ currentStation.iso_3166_1 || 'N/A' }} · {{ currentStation.iso_639 || 'N/A' }}
-          </p>
+          <div v-if="currentStation" class="mt-3 flex items-start gap-4">
+            <img
+              v-if="playerHasFavicon"
+              :key="currentStation.stationuuid"
+              :src="currentStation.url_favicon"
+              :alt="`${currentStation.name} favicon`"
+              class="h-20 w-20 shrink-0 rounded-lg border border-ink-600/60 object-cover"
+              loading="lazy"
+              @error="playerHasFavicon = false"
+            />
+            <div
+              v-else
+              class="flex h-20 w-20 shrink-0 items-center justify-center rounded-lg border border-ink-600/60 bg-ink-800/70 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-400"
+            >
+              No image
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="break-words text-base font-bold text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.28)]">
+                {{ currentStation.name }}
+              </p>
+              <p class="break-words text-sm text-slate-400">
+                {{ currentStation.iso_3166_1 || 'N/A' }} · {{ currentStation.iso_639 || 'N/A' }}
+              </p>
+              <div class="mt-2 flex flex-wrap gap-2">
+                <span
+                  v-for="tag in currentStationTags"
+                  :key="tag"
+                  class="rounded-full border border-neon-cyan/60 bg-neon-cyan/15 px-0.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-neon-cyan shadow-[0_0_10px_rgba(34,211,238,0.24)]"
+                >
+                  {{ tag }}
+                </span>
+              </div>
+              <p class="mt-2 text-sm text-slate-200">
+                <a
+                  v-if="currentStation.url_homepage"
+                  :href="currentStation.url_homepage"
+                  target="_blank"
+                  rel="noreferrer"
+                  class="text-neon-cyan hover:underline"
+                >
+                  Homepage
+                </a>
+                <span v-else class="text-slate-400">N/A</span>
+              </p>
+            </div>
+          </div>
           <p v-else class="mt-2 text-sm text-slate-400">Choose a station below to start listening.</p>
         </div>
 
@@ -138,7 +180,7 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import StationCard from './components/StationCard.vue';
 import { addFavoriteStation, fetchFavorites, fetchStations, removeFavoriteStation } from './composables/useRadioApi';
 
@@ -153,6 +195,7 @@ const errorMessage = ref('');
 const favoriteLoading = ref(false);
 const stationLoading = ref(false);
 const audioRef = ref(null);
+const playerHasFavicon = ref(false);
 
 const pagination = reactive({
   page: 1,
@@ -161,6 +204,19 @@ const pagination = reactive({
   totalPages: 1,
   hasNextPage: false,
   hasPrevPage: false
+});
+
+const currentStationTags = computed(() => {
+  if (!currentStation.value?.tags) {
+    return ['untagged'];
+  }
+
+  const normalizedTags = currentStation.value.tags
+    .split(',')
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+
+  return normalizedTags.length ? normalizedTags : ['untagged'];
 });
 
 function stationQueryParams() {
@@ -176,6 +232,7 @@ function stationQueryParams() {
 
 function playStation(station) {
   currentStation.value = station;
+  playerHasFavicon.value = Boolean(station.url_favicon);
   if (audioRef.value) {
     audioRef.value.src = station.url_stream;
   }
