@@ -11,8 +11,10 @@ Run these from the repo root unless noted:
 - `npm run dev:server` starts the API with nodemon on `http://localhost:4000`.
 - `npm run dev:client` starts the Vite dev server on `http://localhost:5173`.
 - `npm run build` builds the client for production.
+- `npm run seed:stations` seeds MongoDB from `radiobrowser_stations_latest.json`.
 - `npm run dev --workspace server` same as `dev:server` (useful for one-off workspace commands).
 - `npm run lint --workspace server` runs ESLint on the server code.
+- `npm run seed:stations --workspace server` runs the server seed script directly.
 
 ## Coding Style & Naming Conventions
 - JavaScript/TypeScript uses ES modules (`import`/`export`) with two-space indentation.
@@ -32,4 +34,5 @@ Run these from the repo root unless noted:
 
 ## Configuration Tips
 - Copy `server/.env.example` to `server/.env` and set `MONGODB_URI` as needed.
-- If MongoDB is unavailable, the API falls back to an in-memory favorites store; note this when debugging persistence issues.
+- MongoDB is required for startup; if `MONGODB_URI` is missing or the DB is unreachable, the API will not start.
+- Seed data is read from `radiobrowser_stations_latest.json` at the repo root.
