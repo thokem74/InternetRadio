@@ -36,14 +36,7 @@ function buildFilters({ q, tag, iso_3166_1, iso_639 }) {
 
   if (q) {
     const queryRegex = { $regex: escapeRegex(q), $options: 'i' };
-    andConditions.push({
-      $or: [
-        { name: queryRegex },
-        { tags: queryRegex },
-        { iso_3166_1: queryRegex },
-        { iso_639: queryRegex }
-      ]
-    });
+    andConditions.push({ name: queryRegex });
   }
 
   if (andConditions.length === 0) {
