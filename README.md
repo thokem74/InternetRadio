@@ -4,7 +4,7 @@ Full-stack internet radio app built with **MongoDB, Express, Vue 3, Node.js, and
 
 ## Features
 - Browse stations from MongoDB with server-side pagination.
-- Filter by free-text search (`q`), tag, `iso_3166_1`, and `iso_639`.
+- Filter by station-name search (`q`), tag, `iso_3166_1`, and `iso_639`.
 - Play streams in-browser with an HTML5 audio player.
 - "Now playing" panel shows station image, name, ISO codes, tags, and homepage link.
 - Station cards show neon tag badges, ISO codes, homepage link, and favorite controls.
@@ -78,7 +78,7 @@ Open `http://localhost:5173`.
 Query parameters:
 - `page`: default `1`
 - `limit`: default `50`, max `100`
-- `q`: case-insensitive match across `name`, `tags`, `iso_3166_1`, `iso_639`
+- `q`: case-insensitive match on `name`
 - `tag`: exact tag match within comma-separated `tags`
 - `iso_3166_1`: case-insensitive country code match
 - `iso_639`: case-insensitive language code match

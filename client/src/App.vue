@@ -70,9 +70,9 @@
           <label class="text-xs font-semibold uppercase tracking-widest text-slate-300">
             Search
             <input
-              v-model="searchTerm"
+              v-model="stationFilter"
               type="text"
-              placeholder="station, tags, country code, language"
+              placeholder="station name"
               class="mt-2 w-full rounded-xl border border-ink-600/70 bg-ink-900/70 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-neon-cyan focus:outline-none focus:ring-2 focus:ring-neon-cyan/40"
               @keyup.enter="applyFilters"
             />
@@ -133,7 +133,7 @@
         <div class="flex flex-wrap items-end justify-between gap-3">
           <div>
             <h2 class="font-display text-xl font-semibold text-white">Stations</h2>
-            <p class="text-sm text-slate-400">Search by tags and ISO codes.</p>
+            <p class="text-sm text-slate-400">Filter by station name, tags, and ISO codes.</p>
           </div>
           <div class="rounded-full border border-ink-600/70 bg-ink-800/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-neon-cyan">
             {{ pagination.totalItems }} results
@@ -187,7 +187,7 @@ import { addFavoriteStation, fetchFavorites, fetchStations, removeFavoriteStatio
 const stations = ref([]);
 const favoriteIds = ref(new Set());
 const currentStation = ref(null);
-const searchTerm = ref('');
+const stationFilter = ref('');
 const tagFilter = ref('');
 const countryCodeFilter = ref('');
 const languageCodeFilter = ref('');
@@ -223,7 +223,7 @@ function stationQueryParams() {
   return {
     page: pagination.page,
     limit: pagination.limit,
-    q: searchTerm.value.trim(),
+    q: stationFilter.value.trim(),
     tag: tagFilter.value.trim(),
     iso_3166_1: countryCodeFilter.value.trim().toUpperCase(),
     iso_639: languageCodeFilter.value.trim().toLowerCase()
@@ -276,7 +276,7 @@ function applyFilters() {
 }
 
 function clearFilters() {
-  searchTerm.value = '';
+  stationFilter.value = '';
   tagFilter.value = '';
   countryCodeFilter.value = '';
   languageCodeFilter.value = '';
