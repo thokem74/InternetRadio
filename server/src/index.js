@@ -6,6 +6,7 @@ import helmet from 'helmet';
 import mongoose from 'mongoose';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { errorHandler } from './middleware/errorHandler.js';
 import radioRoutes from './routes/radioRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -34,11 +35,7 @@ app.get('/api/health', (_req, res) => {
 });
 
 app.use('/api', radioRoutes);
-
-app.use((err, _req, res, _next) => {
-  console.error(err);
-  res.status(500).json({ message: 'Unexpected server error' });
-});
+app.use(errorHandler);
 
 async function start() {
   if (!mongoUri) {

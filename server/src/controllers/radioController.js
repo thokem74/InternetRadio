@@ -1,6 +1,7 @@
 import { ZodError, z } from 'zod';
 import { deleteFavorite, listFavorites, upsertFavorite } from '../config/favoriteStore.js';
 import { listStations } from '../config/stationStore.js';
+import { AppError } from '../utils/AppError.js';
 
 const MAX_PAGE_SIZE = 100;
 const DEFAULT_PAGE_SIZE = 50;
@@ -81,13 +82,14 @@ export const addFavorite = async (req, res, next) => {
     return res.status(201).json(favorite);
   } catch (error) {
     if (error instanceof ZodError) {
-      return res.status(400).json({
-        message: 'Invalid favorite payload.',
-        issues: error.issues.map((issue) => ({
-          path: issue.path,
-          message: issue.message
-        }))
-      });
+      return next(
+        new AppError('Invalid favorite payload.', 400, {
+          issues: error.issues.map((issue) => ({
+            path: issue.path,
+            message: issue.message
+          }))
+        })
+      );
     }
 
     return next(error);
