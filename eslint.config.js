@@ -8,13 +8,23 @@ export default [
       '**/node_modules/**',
       '**/dist/**',
       '**/.husky/**',
-      'radiobrowser_stations_latest.json.gz'
+      'radiobrowser_stations_latest.json.gz',
+      'cli/**/*.jsx'
     ]
   },
   js.configs.recommended,
   ...vue.configs['flat/recommended'],
   {
     files: ['server/**/*.js'],
+    languageOptions: {
+      sourceType: 'module',
+      globals: {
+        ...globals.node
+      }
+    }
+  },
+  {
+    files: ['cli/**/*.js'],
     languageOptions: {
       sourceType: 'module',
       globals: {
