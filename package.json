@@ -12,5 +12,8 @@
     "dev:client": "npm run dev --workspace client",
     "build": "npm run build --workspace client",
     "seed:stations": "npm run seed:stations --workspace server"
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2"
   }
 }
