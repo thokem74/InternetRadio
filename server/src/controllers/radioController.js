@@ -1,8 +1,15 @@
+import { ZodError, z } from 'zod';
 import { deleteFavorite, listFavorites, upsertFavorite } from '../config/favoriteStore.js';
 import { listStations } from '../config/stationStore.js';
 
 const MAX_PAGE_SIZE = 100;
 const DEFAULT_PAGE_SIZE = 50;
+
+const favoritePayloadSchema = z.object({
+  stationuuid: z.string().trim().min(1),
+  name: z.string().trim().min(1),
+  url_stream: z.string().trim().min(1)
+});
 
 function parsePositiveInt(value, fallback) {
   const parsed = Number.parseInt(value, 10);
@@ -54,10 +61,12 @@ export const getFavorites = async (_req, res, next) => {
 
 export const addFavorite = async (req, res, next) => {
   try {
+    const payload = favoritePayloadSchema.parse(req.body);
+
     const favoritePayload = {
-      stationuuid: normalizeString(req.body.stationuuid),
-      name: normalizeString(req.body.name),
-      url_stream: normalizeString(req.body.url_stream),
+      stationuuid: payload.stationuuid,
+      name: payload.name,
+      url_stream: payload.url_stream,
       url_homepage: normalizeString(req.body.url_homepage),
       url_favicon: normalizeString(req.body.url_favicon),
       tags: normalizeString(req.body.tags),
@@ -68,15 +77,19 @@ export const addFavorite = async (req, res, next) => {
       geo_long: req.body.geo_long ?? null
     };
 
-    if (!favoritePayload.stationuuid || !favoritePayload.name || !favoritePayload.url_stream) {
-      return res.status(400).json({
-        message: 'Invalid favorite payload: stationuuid, name, and url_stream are required.'
-      });
-    }
-
     const favorite = await upsertFavorite(favoritePayload);
     return res.status(201).json(favorite);
   } catch (error) {
+    if (error instanceof ZodError) {
+      return res.status(400).json({
+        message: 'Invalid favorite payload.',
+        issues: error.issues.map((issue) => ({
+          path: issue.path,
+          message: issue.message
+        }))
+      });
+    }
+
     return next(error);
   }
 };
