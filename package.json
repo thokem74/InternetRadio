@@ -5,12 +5,14 @@
   "type": "module",
   "workspaces": [
     "server",
-    "client"
+    "client",
+    "cli"
   ],
   "scripts": {
     "install:all": "npm install --workspaces",
     "dev:server": "npm run dev --workspace server",
     "dev:client": "npm run dev --workspace client",
+    "dev:cli": "npm run dev --workspace cli",
     "build": "npm run build --workspace client",
     "seed:stations": "npm run seed:stations --workspace server",
     "lint": "eslint .",
