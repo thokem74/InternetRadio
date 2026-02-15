@@ -4,7 +4,12 @@ import vue from 'eslint-plugin-vue';
 
 export default [
   {
-    ignores: ['**/node_modules/**', '**/dist/**', '**/.husky/**', 'radiobrowser_stations_latest.json.gz']
+    ignores: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/.husky/**',
+      'radiobrowser_stations_latest.json.gz'
+    ]
   },
   js.configs.recommended,
   ...vue.configs['flat/recommended'],
@@ -24,6 +29,11 @@ export default [
       globals: {
         ...globals.browser
       }
+    },
+    rules: {
+      'vue/max-attributes-per-line': 'off',
+      'vue/singleline-html-element-content-newline': 'off',
+      'vue/html-self-closing': 'off'
     }
   }
 ];

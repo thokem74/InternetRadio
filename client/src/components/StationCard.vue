@@ -14,12 +14,12 @@
     </header>
 
     <div class="mt-3 space-y-2 text-sm text-slate-200">
-      <p class="break-words text-base font-bold text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.28)]">
+      <p
+        class="break-words text-base font-bold text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.28)]"
+      >
         {{ station.name || 'N/A' }}
       </p>
-      <p class="break-words">
-        {{ station.iso_3166_1 || 'N/A' }} · {{ station.iso_639 || 'N/A' }}
-      </p>
+      <p class="break-words">{{ station.iso_3166_1 || 'N/A' }} · {{ station.iso_639 || 'N/A' }}</p>
       <div class="flex flex-wrap gap-2">
         <span
           v-for="tag in stationTags"
@@ -49,7 +49,7 @@
         type="button"
         class="flex-1 rounded-xl border border-neon-cyan/60 bg-neon-cyan/10 px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-neon-cyan transition hover:bg-neon-cyan/20 disabled:cursor-not-allowed disabled:opacity-50"
         :disabled="!station.url_stream"
-        @click="$emit('listen', station)"
+        @click="emit('listen', station)"
       >
         Listen
       </button>
@@ -57,7 +57,7 @@
         type="button"
         class="flex-1 rounded-xl border border-neon-pink/60 bg-neon-pink/10 px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-neon-pink transition hover:bg-neon-pink/20 disabled:cursor-not-allowed disabled:opacity-50"
         :disabled="favoriteBusy"
-        @click="$emit(isFavorite ? 'remove-favorite' : 'add-favorite', station)"
+        @click="emit(isFavorite ? 'remove-favorite' : 'add-favorite', station)"
       >
         {{ isFavorite ? 'Remove Favorite' : 'Save Favorite' }}
       </button>
@@ -82,6 +82,8 @@ const props = defineProps({
     default: false
   }
 });
+
+const emit = defineEmits(['listen', 'add-favorite', 'remove-favorite']);
 
 const hasFavicon = ref(Boolean(props.station.url_favicon));
 const stationTags = computed(() => {

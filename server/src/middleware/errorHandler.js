@@ -1,5 +1,6 @@
 import { AppError } from '../utils/AppError.js';
 
+// eslint-disable-next-line no-unused-vars
 export function errorHandler(err, _req, res, _next) {
   if (err instanceof AppError) {
     return res.status(err.statusCode).json({
