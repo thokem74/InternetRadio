@@ -1,41 +1,17 @@
-import cors from 'cors';
 import dotenv from 'dotenv';
-import express from 'express';
-import rateLimit from 'express-rate-limit';
-import helmet from 'helmet';
 import mongoose from 'mongoose';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { errorHandler } from './middleware/errorHandler.js';
-import radioRoutes from './routes/radioRoutes.js';
+import { createApp } from './app.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
-const app = express();
+const app = createApp();
 const port = Number(process.env.PORT) || 4000;
 const mongoUri = process.env.MONGODB_URI;
-
-const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  standardHeaders: true,
-  legacyHeaders: false
-});
-
-app.use(helmet());
-app.use(cors());
-app.use(express.json());
-app.use('/api', apiLimiter);
-
-app.get('/api/health', (_req, res) => {
-  res.json({ status: 'ok' });
-});
-
-app.use('/api', radioRoutes);
-app.use(errorHandler);
 
 async function start() {
   if (!mongoUri) {
