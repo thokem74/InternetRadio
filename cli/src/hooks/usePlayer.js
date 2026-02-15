@@ -36,13 +36,28 @@ export const usePlayer = () => {
     setIsPaused(false);
     setNowPlaying(station);
 
-    const child = spawn('cvlc', ['--intf', 'dummy', '--play-and-exit', station.url_stream], {
-      stdio: ['ignore', 'ignore', 'pipe']
-    });
+    const child = spawn(
+      'cvlc',
+      [
+        '--intf',
+        'dummy',
+        '--no-video',
+        '--no-metadata-network-access',
+        '--quiet',
+        station.url_stream
+      ],
+      { stdio: ['pipe', 'ignore', 'pipe'] }
+    );
 
     child.stderr.on('data', (data) => {
       const message = data.toString().trim();
-      if (message.toLowerCase().includes('error')) {
+      // Ignore VLC noise (interface warnings, dummy messages)
+      if (
+        message.toLowerCase().includes('error') &&
+        !message.includes('interface') &&
+        !message.includes('globalhotkeys') &&
+        !message.includes('dummy')
+      ) {
         setError(message);
       }
     });
@@ -69,10 +84,11 @@ export const usePlayer = () => {
 
   const togglePause = useCallback(() => {
     const playerProcess = processRef.current;
-    if (!playerProcess) {
+    if (!playerProcess || !playerProcess.stdin?.writable) {
       return;
     }
 
+    // cvlc with --intf rc accepts "pause" on stdin; with dummy, SIGSTOP/SIGCONT is the fallback
     if (isPaused) {
       playerProcess.kill('SIGCONT');
       setIsPaused(false);
