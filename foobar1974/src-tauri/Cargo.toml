@@ -1,0 +1,19 @@
+[package]
+name = "foobar1974"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "foobar1974_lib"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "1"
+rusqlite = { version = "0.32", features = ["bundled", "functions", "vtab"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync", "process"] }
+walkdir = "2"
+
+[dev-dependencies]
+tempfile = "3"
